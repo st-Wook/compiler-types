@@ -133,7 +133,7 @@ type defined = {};
 interface ThisType<T> {}
 
 /** A function type which is assignable to any other function type (and any function is assignable to). */
-type Callback = (...args: Array<any>) => any;
+type Callback = (...args: any) => any;
 
 type LuaTuple<T extends Array<any>> = T & {
 	/**
@@ -146,7 +146,7 @@ type LuaTuple<T extends Array<any>> = T & {
 	readonly _nominal_LuaTuple: unique symbol;
 };
 
-interface TypedPropertyDescriptor<T> {
+interface TypedPropertyDescriptor<T extends (...args: any) => any> {
 	value: (self: InferThis<T>, ...parameters: Parameters<T>) => ReturnType<T>;
 }
 
