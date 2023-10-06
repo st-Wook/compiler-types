@@ -13,23 +13,44 @@ type Required<T> = { [P in keyof T]-?: T[P] };
 /** Make all properties in T readonly */
 type Readonly<T> = { readonly [P in keyof T]: T[P] };
 
-/** Make all properties in T non-readonly. */
-type Writable<T> = { -readonly [P in keyof T]: T[P] };
-
-/** From T pick a set of properties K */
+/** From T, pick a set of properties whose keys are in the union K */
 type Pick<T, K extends keyof T> = { [P in K]: T[P] };
-
-/** Returns a subset of type T which excludes properties K */
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 /** Construct a type with a set of properties K of type T */
 type Record<K extends keyof any, T> = { [P in K]: T };
+
+/** Make all properties in T non-readonly. */
+type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
 /** Exclude from T those types that are assignable to U */
 type Exclude<T, U> = T extends U ? never : T;
 
 /** Extract from T those types that are assignable to U */
 type Extract<T, U> = T extends U ? T : never;
+
+/** Construct a type with the properties of T except for those in type K. */
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+
+/** Exclude null and undefined from T */
+type NonNullable<T> = T & {};
+
+/** Obtain the parameters of a function type in a tuple */
+type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
+
+/** Obtain the parameters of a constructor function type in a tuple */
+type ConstructorParameters<T extends abstract new (...args: any) => any> = T extends abstract new (
+	...args: infer P
+) => any
+	? P
+	: never;
+
+/** Obtain the return type of a function type */
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
+
+/** Obtain the return type of a constructor function type */
+type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R
+	? R
+	: any;
 
 /** Returns a union of all the keys of T whose values extend from U */
 type ExtractKeys<T, U> = { [K in keyof T]-?: T[K] extends U ? K : never }[keyof T];
@@ -43,23 +64,8 @@ type ExcludeKeys<T, U> = { [K in keyof T]-?: T[K] extends U ? never : K }[keyof 
 /** Returns a new object type of all the keys of T whose values do not extend from U */
 type ExcludeMembers<T, U> = Pick<T, ExcludeKeys<T, U>>;
 
-/** Exclude null and undefined from T */
-type NonNullable<T> = T & {};
-
-/** Obtain the parameters of a function type in a `tuple | never`. */
-type Parameters<T> = T extends (...args: infer P) => any ? P : never;
-
-/** Obtain the parameters of a constructor function type in a `tuple | never` */
-type ConstructorParameters<T extends new (...args: any) => any> = T extends new (...args: infer P) => any ? P : never;
-
-/** Obtain the return type of a function type */
-type ReturnType<T> = T extends (...args: Array<any>) => infer R ? R : never;
-
 /** Returns the type of `this` for a given function type */
-type InferThis<T> = T extends (this: infer U, ...parameters: Array<any>) => any ? U : never;
-
-/** Obtain the return type of a constructor function type */
-type InstanceType<T> = T extends new (...args: Array<any>) => infer R ? R : never;
+type InferThis<T> = T extends (this: infer U, ...args: any) => any ? U : never;
 
 /** Combines a series of intersections into one object, e.g. { x: number } & { y: number } becomes { x: number, y: number } */
 type Reconstruct<T> = _<{ [K in keyof T]: T[K] }>;
@@ -68,7 +74,7 @@ type Reconstruct<T> = _<{ [K in keyof T]: T[K] }>;
 type UnionToIntersection<T> = (T extends object ? (k: T) => void : never) extends (k: infer U) => void ? U : never;
 
 /** Extracts the type of the 'this' parameter of a function type, or 'unknown' if the function type has no 'this' parameter. */
-type ThisParameterType<T> = T extends (this: infer U, ...args: Array<any>) => any ? U : unknown;
+type ThisParameterType<T> = T extends (this: infer U, ...args: never) => any ? U : unknown;
 
 /** Removes the 'this' parameter from a function type. */
 type OmitThisParameter<T> =
@@ -123,4 +129,10 @@ type ExcludeNominalKeys<T> = {
 type ExcludeNominalMembers<T> = Pick<T, ExcludeNominalKeys<T>>;
 
 /** Unwraps a Promise<T> */
-type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
+type Awaited<T> = T extends undefined
+	? T // special case for `undefined` when not in `--strictNullChecks` mode
+	: T extends object & { then(successHandler: infer F, ...args: infer _): any } // `await` only unwraps object types with a callable `then`. Non-object types are not unwrapped
+	? F extends (value: infer V, ...args: infer _) => any // if the argument to `then` is callable, extracts the first argument
+		? Awaited<V> // recursively unwrap the value
+		: never // the argument to `then` was not callable
+	: T; // non-object or non-thenable
