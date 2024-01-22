@@ -60,13 +60,13 @@ interface PromiseLike<T> {
 	 */
 	then<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: ((...args: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((...args: any) => TResult2 | PromiseLike<TResult2>) | void,
+		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (...args: any) => TResult2 | PromiseLike<TResult2> | undefined,
 	): PromiseLike<TResult1 | TResult2>;
 	then<TResult1 = T, TResult2 = never>(
-		this: PromiseLike<T>,
-		successHandler?: ((value: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | void,
+		this: Promise<T>,
+		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (reason: any) => TResult2 | PromiseLike<TResult2> | undefined,
 	): PromiseLike<TResult1 | TResult2>;
 }
 
@@ -93,13 +93,13 @@ interface Promise<T> {
 	 */
 	then<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: ((...args: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((...args: any) => TResult2 | PromiseLike<TResult2>) | void,
+		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (...args: any) => TResult2 | PromiseLike<TResult2> | undefined,
 	): Promise<TResult1 | TResult2>;
 	then<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: ((value: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | void,
+		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (reason: any) => TResult2 | PromiseLike<TResult2> | undefined,
 	): Promise<TResult1 | TResult2>;
 
 	/**
@@ -121,13 +121,13 @@ interface Promise<T> {
 	 */
 	andThen<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: ((...args: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((...args: any) => TResult2 | PromiseLike<TResult2>) | void,
+		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (...args: any) => TResult2 | PromiseLike<TResult2> | undefined,
 	): Promise<TResult1 | TResult2>;
 	andThen<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: ((value: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | void,
+		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (reason: any) => TResult2 | PromiseLike<TResult2> | undefined,
 	): Promise<TResult1 | TResult2>;
 
 	/**
@@ -149,11 +149,11 @@ interface Promise<T> {
 	 */
 	catch<T extends ReadonlyArray<any> | [], TResult = never>(
 		this: Promise<T>,
-		failureHandler?: ((...args: T) => TResult | PromiseLike<TResult>) | void,
+		failureHandler?: (...args: T) => TResult | PromiseLike<TResult> | undefined,
 	): Promise<T | TResult>;
 	catch<TResult = never>(
 		this: Promise<T>,
-		failureHandler?: ((reason: T) => TResult | PromiseLike<TResult>) | void,
+		failureHandler?: (reason: any) => TResult | PromiseLike<TResult> | undefined,
 	): Promise<T | TResult>;
 
 	/**
@@ -169,7 +169,7 @@ interface Promise<T> {
 	 *
 	 * If you return a Promise from the tap handler callback, its value will be discarded but `tap` will still wait until it resolves before passing the original value through.
 	 */
-	tap(this: Promise<T>, tapHandler: ((...args: any) => any | PromiseLike<any>) | void): Promise<T>;
+	tap(this: Promise<T>, tapHandler: (...args: any) => any | PromiseLike<any> | undefined): Promise<T>;
 
 	/**
 	 * Set a handler that will be called regardless of the promise's fate. The handler is called when the promise is
@@ -239,7 +239,7 @@ interface Promise<T> {
 	 */
 	finally<TResult = never>(
 		this: Promise<T>,
-		finallyHandler?: ((status?: Promise.Status) => TResult | PromiseLike<TResult>) | void,
+		finallyHandler?: (status?: Promise.Status) => TResult | PromiseLike<TResult> | undefined,
 	): Promise<T | TResult>;
 
 	/**
@@ -607,17 +607,16 @@ interface PromiseConstructor {
 	 * end
 	 * ```
 	 */
-	resolve(this: void): Promise<void>;
-	resolve<T>(this: void, arg: T): Promise<T>;
-	resolve<T extends ReadonlyArray<any>>(this: void, ...args: T): Promise<[...T]>;
+	resolve(): Promise<void>;
+	resolve<T>(value: T): Promise<Awaited<T>>;
+	resolve<T extends ReadonlyArray<any>>(...args: T): Promise<[...T]>;
 
 	/**
 	 * Creates an immediately rejected Promise with the given value.
 	 *
 	 * > Someone needs to consume this rejection (i.e. `:catch()` it), otherwise it will emit an unhandled Promise rejection warning on the next frame. Thus, you should not create and store rejected Promises for later use. Only create them on-demand as needed.
 	 */
-	reject(this: void): Promise<void>;
-	reject(this: void, value: unknown): Promise<unknown>;
+	reject<T = never>(value?: any): Promise<T>;
 
 	/**
 	 * Accepts an array of Promises and returns a new promise that:
@@ -852,25 +851,21 @@ interface PromiseConstructor {
 	 * end)
 	 * ```
 	 */
-	fromEvent(this: void, event: RBXScriptSignal<() => void>, predicate?: () => boolean): Promise<void>;
+	fromEvent(event: RBXScriptSignal<() => void>, predicate?: () => boolean): Promise<void>;
 	fromEvent(
-		this: void,
 		event: { Connect: (callback: () => void) => { Disconnect: () => void } },
 		predicate?: () => boolean,
 	): Promise<void>;
 	fromEvent<P extends ReadonlyArray<any> | []>(
-		this: void,
 		event: RBXScriptSignal<(...args: P) => void>,
 		predicate?: (...args: P) => boolean,
 	): Promise<P>;
 	fromEvent<P extends ReadonlyArray<any> | []>(
-		this: void,
 		event: { Connect: (callback: (...args: P) => void) => { Disconnect: () => void } },
 		predicate?: (...args: P) => boolean,
 	): Promise<P>;
-	fromEvent<P>(this: void, event: RBXScriptSignal<(arg: P) => void>, predicate?: (arg: P) => boolean): Promise<P>;
+	fromEvent<P>(event: RBXScriptSignal<(arg: P) => void>, predicate?: (arg: P) => boolean): Promise<P>;
 	fromEvent<P>(
-		this: void,
 		event: { Connect: (callback: (arg: P) => void) => { Disconnect: () => void } },
 		predicate?: (arg: P) => boolean,
 	): Promise<P>;
