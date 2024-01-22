@@ -169,7 +169,14 @@ interface Promise<T> {
 	 *
 	 * If you return a Promise from the tap handler callback, its value will be discarded but `tap` will still wait until it resolves before passing the original value through.
 	 */
-	tap(this: Promise<T>, tapHandler: (...args: any) => any | PromiseLike<any> | undefined): Promise<T>;
+	tap<T extends ReadonlyArray<any> | [], TResult = never>(
+		this: Promise<T>,
+		tapHandler: (...args: T) => TResult | PromiseLike<TResult> | undefined,
+	): Promise<T>;
+	tap<TResult = never>(
+		this: Promise<T>,
+		tapHandler: (value: T) => TResult | PromiseLike<TResult> | undefined,
+	): Promise<T>;
 
 	/**
 	 * Set a handler that will be called regardless of the promise's fate. The handler is called when the promise is
