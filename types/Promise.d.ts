@@ -58,15 +58,15 @@ interface PromiseLike<T> {
 	 * >
 	 * > To run code no matter what, use [Promise:finally](https://eryn.io/roblox-lua-promise/api/Promise#finally).
 	 */
+	then<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
+		this: Promise<T>,
+		successHandler?: ((...args: T) => TResult1 | PromiseLike<TResult1>) | void,
+		failureHandler?: ((...args: any) => TResult2 | PromiseLike<TResult2>) | void,
+	): PromiseLike<TResult1 | TResult2>;
 	then<TResult1 = T, TResult2 = never>(
 		this: PromiseLike<T>,
 		successHandler?: ((value: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((reason: T) => TResult2 | PromiseLike<TResult2>) | void,
-	): PromiseLike<TResult1 | TResult2>;
-	then<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
-		this: Promise<T>,
-		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | void,
-		failureHandler?: (...args: T) => TResult2 | PromiseLike<TResult2> | void,
+		failureHandler?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | void,
 	): PromiseLike<TResult1 | TResult2>;
 }
 
@@ -93,13 +93,13 @@ interface Promise<T> {
 	 */
 	then<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | void,
-		failureHandler?: (...args: T) => TResult2 | PromiseLike<TResult2> | void,
+		successHandler?: ((...args: T) => TResult1 | PromiseLike<TResult1>) | void,
+		failureHandler?: ((...args: any) => TResult2 | PromiseLike<TResult2>) | void,
 	): Promise<TResult1 | TResult2>;
 	then<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
 		successHandler?: ((value: T) => TResult1 | PromiseLike<TResult1>) | void,
-		failureHandler?: ((reason: T) => TResult2 | PromiseLike<TResult2>) | void,
+		failureHandler?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | void,
 	): Promise<TResult1 | TResult2>;
 
 	/**
@@ -121,13 +121,13 @@ interface Promise<T> {
 	 */
 	andThen<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | void,
-		failureHandler?: (...args: T) => TResult2 | PromiseLike<TResult2> | void,
+		successHandler?: ((...args: T) => TResult1 | PromiseLike<TResult1>) | void,
+		failureHandler?: ((...args: any) => TResult2 | PromiseLike<TResult2>) | void,
 	): Promise<TResult1 | TResult2>;
 	andThen<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | void,
-		failureHandler?: (reason: T) => TResult2 | PromiseLike<TResult2> | void,
+		successHandler?: ((value: T) => TResult1 | PromiseLike<TResult1>) | void,
+		failureHandler?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | void,
 	): Promise<TResult1 | TResult2>;
 
 	/**
@@ -149,11 +149,11 @@ interface Promise<T> {
 	 */
 	catch<T extends ReadonlyArray<any> | [], TResult = never>(
 		this: Promise<T>,
-		failureHandler?: (...args: T) => TResult | PromiseLike<TResult> | void,
+		failureHandler?: ((...args: T) => TResult | PromiseLike<TResult>) | void,
 	): Promise<T | TResult>;
 	catch<TResult = never>(
 		this: Promise<T>,
-		failureHandler?: (reason: T) => TResult | PromiseLike<TResult> | void,
+		failureHandler?: ((reason: T) => TResult | PromiseLike<TResult>) | void,
 	): Promise<T | TResult>;
 
 	/**
@@ -169,7 +169,7 @@ interface Promise<T> {
 	 *
 	 * If you return a Promise from the tap handler callback, its value will be discarded but `tap` will still wait until it resolves before passing the original value through.
 	 */
-	tap(this: Promise<T>, tapHandler: (...args: any) => any | PromiseLike<any> | void): Promise<T>;
+	tap(this: Promise<T>, tapHandler: ((...args: any) => any | PromiseLike<any>) | void): Promise<T>;
 
 	/**
 	 * Set a handler that will be called regardless of the promise's fate. The handler is called when the promise is
@@ -239,7 +239,7 @@ interface Promise<T> {
 	 */
 	finally<TResult = never>(
 		this: Promise<T>,
-		finallyHandler?: (status?: Promise.Status) => TResult | PromiseLike<TResult> | void,
+		finallyHandler?: ((status?: Promise.Status) => TResult | PromiseLike<TResult>) | void,
 	): Promise<T | TResult>;
 
 	/**
