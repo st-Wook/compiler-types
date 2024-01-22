@@ -617,8 +617,7 @@ interface PromiseConstructor {
 	 * > Someone needs to consume this rejection (i.e. `:catch()` it), otherwise it will emit an unhandled Promise rejection warning on the next frame. Thus, you should not create and store rejected Promises for later use. Only create them on-demand as needed.
 	 */
 	reject(this: void): Promise<void>;
-	reject<T>(this: void, arg: T): Promise<T>;
-	reject<T extends ReadonlyArray<any> | []>(this: void, ...args: T): Promise<[...T]>;
+	reject(this: void, value: unknown): Promise<unknown>;
 
 	/**
 	 * Accepts an array of Promises and returns a new promise that:
