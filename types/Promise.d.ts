@@ -603,7 +603,7 @@ interface PromiseConstructor {
 	 * return Promise.all(promises)
 	 * ```
 	 */
-	all: <T extends ReadonlyArray<PromiseLike<T> | T> | []>(
+	all: <T extends ReadonlyArray<unknown> | []>(
 		values: T,
 	) => Promise<[...{ -readonly [P in keyof T]: Awaited<T[P]> }]>;
 
@@ -620,7 +620,7 @@ interface PromiseConstructor {
 	 * return Promise.allSettled(promises)
 	 * ```
 	 */
-	allSettled: <T extends ReadonlyArray<PromiseLike<T> | T> | []>(
+	allSettled: <T extends ReadonlyArray<unknown> | []>(
 		values: T,
 	) => Promise<{ -readonly [P in keyof T]: Promise.Status }>;
 
