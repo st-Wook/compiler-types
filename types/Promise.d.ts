@@ -58,11 +58,6 @@ interface PromiseLike<T> {
 	 * >
 	 * > To run code no matter what, use [Promise:finally](https://eryn.io/roblox-lua-promise/api/Promise#finally).
 	 */
-	then<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
-		this: Promise<T>,
-		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | undefined,
-		failureHandler?: (...args: any) => TResult2 | PromiseLike<TResult2> | undefined,
-	): PromiseLike<TResult1 | TResult2>;
 	then<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
 		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
@@ -91,11 +86,6 @@ interface Promise<T> {
 	 * >
 	 * > To run code no matter what, use [Promise:finally](https://eryn.io/roblox-lua-promise/api/Promise#finally).
 	 */
-	then<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
-		this: Promise<T>,
-		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | undefined,
-		failureHandler?: (...args: any) => TResult2 | PromiseLike<TResult2> | undefined,
-	): Promise<TResult1 | TResult2>;
 	then<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
 		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
@@ -119,11 +109,6 @@ interface Promise<T> {
 	 * >
 	 * > To run code no matter what, use [Promise:finally](https://eryn.io/roblox-lua-promise/api/Promise#finally).
 	 */
-	andThen<T extends ReadonlyArray<any> | [], TResult1 = T, TResult2 = never>(
-		this: Promise<T>,
-		successHandler?: (...args: T) => TResult1 | PromiseLike<TResult1> | undefined,
-		failureHandler?: (...args: any) => TResult2 | PromiseLike<TResult2> | undefined,
-	): Promise<TResult1 | TResult2>;
 	andThen<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
 		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
@@ -147,10 +132,6 @@ interface Promise<T> {
 	 * >
 	 * > To run code no matter what, use [Promise:finally](https://eryn.io/roblox-lua-promise/api/Promise#finally).
 	 */
-	catch<T extends ReadonlyArray<any> | [], TResult = never>(
-		this: Promise<T>,
-		failureHandler?: (...args: T) => TResult | PromiseLike<TResult> | undefined,
-	): Promise<T | TResult>;
 	catch<TResult = never>(
 		this: Promise<T>,
 		failureHandler?: (reason: any) => TResult | PromiseLike<TResult> | undefined,
@@ -169,10 +150,6 @@ interface Promise<T> {
 	 *
 	 * If you return a Promise from the tap handler callback, its value will be discarded but `tap` will still wait until it resolves before passing the original value through.
 	 */
-	tap<T extends ReadonlyArray<any> | [], TResult = never>(
-		this: Promise<T>,
-		tapHandler: (...args: T) => TResult | PromiseLike<TResult> | undefined,
-	): Promise<T>;
 	tap<TResult = never>(
 		this: Promise<T>,
 		tapHandler: (value: T) => TResult | PromiseLike<TResult> | undefined,
@@ -264,11 +241,6 @@ interface Promise<T> {
 	 * end)
 	 * ```
 	 */
-	andThenCall<P extends ReadonlyArray<any> | [], R extends ReadonlyArray<any> | []>(
-		this: Promise<T>,
-		callback: (...args: P) => R,
-		...args: P
-	): Promise<[...R]>;
 	andThenCall<P extends ReadonlyArray<any> | [], R>(
 		this: Promise<T>,
 		callback: (...args: P) => R,
@@ -280,11 +252,6 @@ interface Promise<T> {
 	 *
 	 * Attaches a `finally` handler to this Promise that calls the given callback with the predefined arguments.
 	 */
-	finallyCall<P extends ReadonlyArray<any> | [], R extends ReadonlyArray<any> | []>(
-		this: Promise<T>,
-		callback: (...args: P) => R,
-		...args: P
-	): Promise<[...R]>;
 	finallyCall<P extends ReadonlyArray<any> | [], R>(
 		this: Promise<T>,
 		callback: (...args: P) => R,
@@ -311,7 +278,6 @@ interface Promise<T> {
 	 * > Promises are eager, so if you pass a Promise to `andThenReturn`, it will begin executing before `andThenReturn` is reached in the chain. Likewise, if you pass a Promise created from [Promise.reject](https://eryn.io/roblox-lua-promise/api/Promise#reject) into `andThenReturn`, it's possible that this will trigger the unhandled rejection warning. If you need to return a Promise, it's usually best practice to use [Promise.andThen](https://eryn.io/roblox-lua-promise/api/Promise#andThen).
 	 */
 	andThenReturn<U>(this: Promise<T>, arg: U): Promise<U>;
-	andThenReturn<U extends ReadonlyArray<any> | []>(this: Promise<T>, ...args: U): Promise<[...U]>;
 
 	/**
 	 * Attaches a `finally` handler to this Promise that discards the resolved value and returns the given value from it.
@@ -329,7 +295,6 @@ interface Promise<T> {
 	 * ```
 	 */
 	finallyReturn<U>(this: Promise<T>, arg: U): Promise<U>;
-	finallyReturn<U extends ReadonlyArray<any> | []>(this: Promise<T>, ...args: U): Promise<[...U]>;
 
 	/**
 	 * Returns a new Promise that resolves if the chained Promise resolves within `seconds` seconds, or rejects if execution time exceeds `seconds`. The chained Promise will be cancelled if the timeout is reached.
@@ -366,11 +331,6 @@ interface Promise<T> {
 	 * })
 	 * ```
 	 */
-	timeout<T extends ReadonlyArray<any> | [], TResult>(
-		this: Promise<T>,
-		seconds: number,
-		rejectionValue?: TResult,
-	): Promise<TResult extends undefined ? [...T] | Promise.Error : [...T] | TResult>;
 	timeout<TResult>(
 		this: Promise<T>,
 		seconds: number,
@@ -401,10 +361,6 @@ interface Promise<T> {
 	 *
 	 * If this Promise is still running, Rejected, or Cancelled, the Promise returned from `:now()` will reject with the `rejectionValue` if passed, otherwise with a `Promise.Error(Promise.Error.Kind.NotResolvedInTime)`. This can be checked with `Error.isKind`.
 	 */
-	now<T extends ReadonlyArray<any> | [], TResult>(
-		this: Promise<T>,
-		rejectionValue?: TResult,
-	): Promise<TResult extends undefined ? [...T] | Promise.Error : [...T] | TResult>;
 	now<TResult>(
 		this: Promise<T>,
 		rejectionValue?: TResult,
@@ -519,8 +475,8 @@ interface PromiseConstructor {
 	 */
 	new <T>(
 		executor: (
-			resolve: (...args: any) => void,
-			reject: (...args: any) => void,
+			resolve: (value: T | Promise<T>) => void,
+			reject: (reason?: unknown) => void,
 			onCancel: (abortHandler?: () => void) => boolean,
 		) => void,
 	): Promise<T>;
@@ -541,8 +497,8 @@ interface PromiseConstructor {
 	 */
 	defer: <T>(
 		executor: (
-			resolve: (...args: any) => void,
-			reject: (...args: any) => void,
+			resolve: (value: T | [T] | [Promise<T>]) => void,
+			reject: (reason?: unknown) => void,
 			onCancel: (abortHandler?: () => void) => boolean,
 		) => void,
 	) => Promise<T>;
@@ -594,7 +550,7 @@ interface PromiseConstructor {
 	 * end)
 	 * ```
 	 */
-	promisify: <T>(callback: (...args: any) => T) => (...args: any) => Promise<T>;
+	promisify: <T extends ReadonlyArray<any>, U>(callback: (...args: T) => U) => (...args: T) => Promise<U>;
 
 	/** Creates an immediately resolved Promise with the given value.
 	 *
