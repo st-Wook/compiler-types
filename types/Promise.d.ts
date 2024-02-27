@@ -383,12 +383,12 @@ interface Promise<T> {
 	 * end
 	 * ```
 	 */
-	await(this: Promise<T>): LuaTuple<[true, T] | [false, T | undefined]>;
+	await(this: Promise<T>): LuaTuple<[true, T] | [false, unknown]>;
 
 	/**
 	 * Yields the current thread until the given Promise completes. Returns the Promise's status, followed by the values that the promise resolved or rejected with.
 	 */
-	awaitStatus(this: Promise<T>): LuaTuple<[Promise.Status, T | undefined]>;
+	awaitStatus(this: Promise<T>): LuaTuple<[Promise.Status, unknown]>;
 
 	/**
 	 * Yields the current thread until the given Promise completes. Returns the values that the promise resolved with.
