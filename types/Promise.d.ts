@@ -570,16 +570,15 @@ interface PromiseConstructor {
 	 * end
 	 * ```
 	 */
-	resolve(): Promise<void>;
-	resolve<T>(value: T): Promise<Awaited<T>>;
-	resolve<T extends ReadonlyArray<any>>(...args: T): Promise<[...T]>;
+	resolve(this: void): Promise<void>;
+	resolve<T>(this: void, value: T): Promise<Awaited<T>>;
 
 	/**
 	 * Creates an immediately rejected Promise with the given value.
 	 *
 	 * > Someone needs to consume this rejection (i.e. `:catch()` it), otherwise it will emit an unhandled Promise rejection warning on the next frame. Thus, you should not create and store rejected Promises for later use. Only create them on-demand as needed.
 	 */
-	reject<T = never>(value?: any): Promise<T>;
+	reject: <T = never>(value?: any) => Promise<T>;
 
 	/**
 	 * Accepts an array of Promises and returns a new promise that:
@@ -814,21 +813,25 @@ interface PromiseConstructor {
 	 * end)
 	 * ```
 	 */
-	fromEvent(event: RBXScriptSignal<() => void>, predicate?: () => boolean): Promise<void>;
+	fromEvent(this: void, event: RBXScriptSignal<() => void>, predicate?: () => boolean): Promise<void>;
 	fromEvent(
+		this: void,
 		event: { Connect: (callback: () => void) => { Disconnect: () => void } },
 		predicate?: () => boolean,
 	): Promise<void>;
 	fromEvent<P extends ReadonlyArray<any> | []>(
+		this: void,
 		event: RBXScriptSignal<(...args: P) => void>,
 		predicate?: (...args: P) => boolean,
 	): Promise<P>;
 	fromEvent<P extends ReadonlyArray<any> | []>(
+		this: void,
 		event: { Connect: (callback: (...args: P) => void) => { Disconnect: () => void } },
 		predicate?: (...args: P) => boolean,
 	): Promise<P>;
-	fromEvent<P>(event: RBXScriptSignal<(arg: P) => void>, predicate?: (arg: P) => boolean): Promise<P>;
+	fromEvent<P>(this: void, event: RBXScriptSignal<(arg: P) => void>, predicate?: (arg: P) => boolean): Promise<P>;
 	fromEvent<P>(
+		this: void,
 		event: { Connect: (callback: (arg: P) => void) => { Disconnect: () => void } },
 		predicate?: (arg: P) => boolean,
 	): Promise<P>;
