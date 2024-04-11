@@ -6,7 +6,11 @@
 
 declare namespace Promise {
 	namespace Error {
-		type Kind = "ExecutionError" | "AlreadyCancelled" | "NotResolvedInTime" | "TimedOut";
+		type Kind =
+			| "ExecutionError"
+			| "AlreadyCancelled"
+			| "NotResolvedInTime"
+			| "TimedOut";
 	}
 
 	interface ErrorOptions {
@@ -34,9 +38,15 @@ declare namespace Promise {
 
 		is: (value: any) => value is Promise.Error;
 
-		isKind: (value: any, kind: Promise.Error.Kind) => value is Promise.Error;
+		isKind: (
+			value: any,
+			kind: Promise.Error.Kind,
+		) => value is Promise.Error;
 
-		new (options?: Partial<Promise.ErrorOptions>, parent?: Promise.Error): Promise.Error;
+		new (
+			options?: Partial<Promise.ErrorOptions>,
+			parent?: Promise.Error,
+		): Promise.Error;
 	}
 }
 
@@ -60,8 +70,12 @@ interface PromiseLike<T> {
 	 */
 	then<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
-		failureHandler?: (reason: any) => TResult2 | PromiseLike<TResult2> | undefined,
+		successHandler?: (
+			value: T,
+		) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (
+			reason: any,
+		) => TResult2 | PromiseLike<TResult2> | undefined,
 	): PromiseLike<TResult1 | TResult2>;
 }
 
@@ -88,8 +102,12 @@ interface Promise<T> {
 	 */
 	then<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
-		failureHandler?: (reason: any) => TResult2 | PromiseLike<TResult2> | undefined,
+		successHandler?: (
+			value: T,
+		) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (
+			reason: any,
+		) => TResult2 | PromiseLike<TResult2> | undefined,
 	): Promise<TResult1 | TResult2>;
 
 	/**
@@ -111,8 +129,12 @@ interface Promise<T> {
 	 */
 	andThen<TResult1 = T, TResult2 = never>(
 		this: Promise<T>,
-		successHandler?: (value: T) => TResult1 | PromiseLike<TResult1> | undefined,
-		failureHandler?: (reason: any) => TResult2 | PromiseLike<TResult2> | undefined,
+		successHandler?: (
+			value: T,
+		) => TResult1 | PromiseLike<TResult1> | undefined,
+		failureHandler?: (
+			reason: any,
+		) => TResult2 | PromiseLike<TResult2> | undefined,
 	): Promise<TResult1 | TResult2>;
 
 	/**
@@ -134,7 +156,9 @@ interface Promise<T> {
 	 */
 	catch<TResult = never>(
 		this: Promise<T>,
-		failureHandler?: (reason: any) => TResult | PromiseLike<TResult> | undefined,
+		failureHandler?: (
+			reason: any,
+		) => TResult | PromiseLike<TResult> | undefined,
 	): Promise<T | TResult>;
 
 	/**
@@ -223,8 +247,8 @@ interface Promise<T> {
 	 */
 	finally<TResult = never>(
 		this: Promise<T>,
-		finallyHandler?: (status?: Promise.Status) => TResult | PromiseLike<TResult> | undefined,
-	): Promise<T | TResult>;
+		finallyHandler?: (status?: Promise.Status) => TResult | undefined,
+	): TResult extends PromiseLike<infer U> ? Promise<U> : Promise<T>;
 
 	/**
 	 * Attaches an `andThen` handler to this Promise that calls the given callback with the predefined arguments. The resolved value is discarded.
@@ -527,7 +551,10 @@ interface PromiseConstructor {
 	 *     end)
 	 * ```
 	 */
-	try: <T, P extends ReadonlyArray<any> | []>(callback: (...args: P) => T, ...args: P) => Promise<T>;
+	try: <T, P extends ReadonlyArray<any> | []>(
+		callback: (...args: P) => T,
+		...args: P
+	) => Promise<T>;
 
 	/**
 	 * Wraps a function that yields into one that returns a Promise.
@@ -550,7 +577,9 @@ interface PromiseConstructor {
 	 * end)
 	 * ```
 	 */
-	promisify: <T extends ReadonlyArray<any>, U>(callback: (...args: T) => U) => (...args: T) => Promise<U>;
+	promisify: <T extends ReadonlyArray<any>, U>(
+		callback: (...args: T) => U,
+	) => (...args: T) => Promise<U>;
 
 	/** Creates an immediately resolved Promise with the given value.
 	 *
@@ -643,7 +672,9 @@ interface PromiseConstructor {
 	 * return Promise.race(promises)
 	 * ```
 	 */
-	race: <T extends ReadonlyArray<any> | []>(values: T) => Promise<Awaited<T[number]>>;
+	race: <T extends ReadonlyArray<any> | []>(
+		values: T,
+	) => Promise<Awaited<T[number]>>;
 
 	/**
 	 * Accepts an array of Promises and returns a Promise that is resolved as soon as `count` Promises are resolved from the input array. The resolved array values are in the order that the Promises resolved in. When this Promise resolves, all other pending Promises are cancelled if they have no other consumers.
@@ -660,7 +691,10 @@ interface PromiseConstructor {
 	 * return Promise.some(promises, 2) -- Only resolves with first 2 promises to resolve
 	 * ```
 	 */
-	some: <T extends ReadonlyArray<any> | []>(values: T, count: number) => Promise<ReadonlyArray<Awaited<T[number]>>>;
+	some: <T extends ReadonlyArray<any> | []>(
+		values: T,
+		count: number,
+	) => Promise<ReadonlyArray<Awaited<T[number]>>>;
 
 	/**
 	 * Accepts an array of Promises and returns a Promise that is resolved as soon as _any_ of the input Promises resolves. It will reject only if _all_ input Promises reject. As soon as one Promises resolves, all other pending Promises are cancelled if they have no other consumers.
@@ -677,7 +711,9 @@ interface PromiseConstructor {
 	 * return Promise.any(promises) -- Resolves with first value to resolve (only rejects if all 3 rejected)
 	 * ```
 	 */
-	any: <T extends ReadonlyArray<any> | []>(values: T) => Promise<Awaited<T[number]>>;
+	any: <T extends ReadonlyArray<any> | []>(
+		values: T,
+	) => Promise<Awaited<T[number]>>;
 
 	/**
 	 * Returns a Promise that resolves after `seconds` seconds have passed. The Promise resolves with the actual amount of time that was waited.
@@ -813,10 +849,16 @@ interface PromiseConstructor {
 	 * end)
 	 * ```
 	 */
-	fromEvent(this: void, event: RBXScriptSignal<() => void>, predicate?: () => boolean): Promise<void>;
 	fromEvent(
 		this: void,
-		event: { Connect: (callback: () => void) => { Disconnect: () => void } },
+		event: RBXScriptSignal<() => void>,
+		predicate?: () => boolean,
+	): Promise<void>;
+	fromEvent(
+		this: void,
+		event: {
+			Connect: (callback: () => void) => { Disconnect: () => void };
+		},
 		predicate?: () => boolean,
 	): Promise<void>;
 	fromEvent<P extends ReadonlyArray<any> | []>(
@@ -826,13 +868,23 @@ interface PromiseConstructor {
 	): Promise<P>;
 	fromEvent<P extends ReadonlyArray<any> | []>(
 		this: void,
-		event: { Connect: (callback: (...args: P) => void) => { Disconnect: () => void } },
+		event: {
+			Connect: (callback: (...args: P) => void) => {
+				Disconnect: () => void;
+			};
+		},
 		predicate?: (...args: P) => boolean,
 	): Promise<P>;
-	fromEvent<P>(this: void, event: RBXScriptSignal<(arg: P) => void>, predicate?: (arg: P) => boolean): Promise<P>;
 	fromEvent<P>(
 		this: void,
-		event: { Connect: (callback: (arg: P) => void) => { Disconnect: () => void } },
+		event: RBXScriptSignal<(arg: P) => void>,
+		predicate?: (arg: P) => boolean,
+	): Promise<P>;
+	fromEvent<P>(
+		this: void,
+		event: {
+			Connect: (callback: (arg: P) => void) => { Disconnect: () => void };
+		},
 		predicate?: (arg: P) => boolean,
 	): Promise<P>;
 
@@ -862,7 +914,11 @@ interface PromiseConstructor {
 	 */
 	fold: <T, V = T>(
 		list: ReadonlyArray<PromiseLike<T> | T>,
-		reducer: (accumulator: V, value: T, index: number) => PromiseLike<V> | V,
+		reducer: (
+			accumulator: V,
+			value: T,
+			index: number,
+		) => PromiseLike<V> | V,
 		initialValue: V,
 	) => Promise<Awaited<V>>;
 
@@ -872,11 +928,14 @@ interface PromiseConstructor {
 	 *
 	 * The callback is called with the actual promise that rejected, followed by the rejection values.
 	 */
-	onUnhandledRejection: (callback: (this: Promise<any | void>, ...values: any) => void) => () => void;
+	onUnhandledRejection: (
+		callback: (this: Promise<any | void>, ...values: any) => void,
+	) => () => void;
 }
 
 declare namespace Promise {
-	export type Status = PromiseConstructor["Status"][keyof PromiseConstructor["Status"]];
+	export type Status =
+		PromiseConstructor["Status"][keyof PromiseConstructor["Status"]];
 }
 
 declare const Promise: PromiseConstructor;
